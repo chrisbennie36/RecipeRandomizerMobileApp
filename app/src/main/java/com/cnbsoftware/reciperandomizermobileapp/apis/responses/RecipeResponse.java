@@ -7,4 +7,7 @@ public class RecipeResponse {
     @SerializedName("recipeUrl")
     @Expose
     public String RecipeUrl;
+    @SerializedName("errorTraceId")
+    @Expose
+    public String ErrorTraceId;
 }

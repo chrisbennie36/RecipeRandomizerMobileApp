@@ -51,7 +51,7 @@ public abstract class PreferencesActivity extends AppCompatActivity {
             userId = bundle.getInt("UserId");
             configuredRecipePreferences = bundle.getParcelableArrayList("ConfiguredRecipePreferences");
 
-            showCurrentUserPreferences = userId != 0;
+            showCurrentUserPreferences = userId != 0 && userRecipePreferences != null;
 
             if(showCurrentUserPreferences) {
                 userRecipePreferencesDto = new UserRecipePreferencesDto(userId, userRecipePreferences);

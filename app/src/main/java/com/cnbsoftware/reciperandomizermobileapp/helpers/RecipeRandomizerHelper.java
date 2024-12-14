@@ -8,14 +8,17 @@ import android.os.Bundle;
 import android.os.StrictMode;
 import android.util.Log;
 
+import com.cnbsoftware.reciperandomizermobileapp.CustomErrorPageActivity;
 import com.cnbsoftware.reciperandomizermobileapp.SetPreferencesActivity;
 import com.cnbsoftware.reciperandomizermobileapp.apis.RecipeRandomizerApi;
+import com.cnbsoftware.reciperandomizermobileapp.apis.responses.ProblemDetailsResponse;
 import com.cnbsoftware.reciperandomizermobileapp.apis.responses.RecipePreferencesResponse;
 import com.cnbsoftware.reciperandomizermobileapp.apis.responses.RecipeResponse;
 import com.cnbsoftware.reciperandomizermobileapp.dtos.RecipePreferenceDto;
 import com.cnbsoftware.reciperandomizermobileapp.dtos.UserRecipePreferencesDto;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
@@ -35,9 +38,10 @@ public class RecipeRandomizerHelper {
     RecipeRandomizerApi recipeRandomizerApi;
     ArrayList<RecipePreferenceDto> configuredRecipePreferences = new ArrayList<>();
 
-    public RecipeRandomizerHelper() throws MalformedURLException {
+    public RecipeRandomizerHelper(Context context) throws MalformedURLException {
+        this.context = context;
         Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl(new URL("http://localhost:5179/"))
+                .baseUrl(new URL("http://192.168.178.220:5179"))
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();
 
@@ -48,7 +52,7 @@ public class RecipeRandomizerHelper {
         this.mainActivityIntent = mainActivityIntent;
 
         Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl(new URL("http://localhost:5179/"))
+                .baseUrl(new URL("http://192.168.178.220:5179"))
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();
 
@@ -61,33 +65,43 @@ public class RecipeRandomizerHelper {
         StrictMode.setThreadPolicy(policy);
 
         Call call = recipeRandomizerApi.generateRecipeForUser(userId);
+        Response response = null;
+        try {
+            response = call.execute();
+        } catch (IOException e) {
+            Log.e("RecipeRandomizerHelper", String.format("IOException when calling the GenerateRecipeForUser API method: %s", e.getMessage()));
+        }
 
-        call.enqueue(new Callback() {
+        if (!response.isSuccessful()) {
+            Bundle bundle = new Bundle();
+            try {
+                bundle.putString("ProblemDetails", response.errorBody().string());
+            } catch (IOException e) {
+                Log.e("RecipeRandomizerHelper", String.format("IOException when calling the GenerateRecipeForUser API method: %s", e.getMessage()));
+            }
+            Intent intent = new Intent(context, CustomErrorPageActivity.class);
+            intent.putExtras(bundle);
+            context.startActivity(intent);
+        } else {
+            RecipeResponse recipeResponse = null;
+            try {
+                recipeResponse = getRecipeResponseFromJson(response.body());
+            } catch (JsonProcessingException e) {
+                throw new RuntimeException(e);
+            }
 
-            @Override
-            public void onResponse(Call call, Response response) {
-                if (!response.isSuccessful()) {
-                    Log.e("RecipeRandomizerHelper", "GenerateRecipeForUser API call unsuccessful");
-                    return;
-                }
-
-                String recipeUrl = null;
-                try {
-                    recipeUrl = getRecipeResponseFromJson(response.body()).RecipeUrl;
-                } catch (JsonProcessingException e) {
-                    throw new RuntimeException(e);
-                }
-                //mainActivityIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            if(recipeResponse.RecipeUrl != null) {
                 Intent intent = new Intent(Intent.ACTION_VIEW);
-                intent.setData(Uri.parse(recipeUrl));
+                intent.setData(Uri.parse(recipeResponse.RecipeUrl));
                 activity.startActivity(intent);
+            } else {
+                Intent intent = new Intent(context, CustomErrorPageActivity.class);
+                Bundle bundle = new Bundle();
+                bundle.putString("ProblemDetails", recipeResponse.ErrorTraceId);
+                intent.putExtras(bundle);
+                context.startActivity(intent);
             }
-
-            @Override
-            public void onFailure(Call call, Throwable t) {
-                Log.e("RecipeRandomizerHelper", "GenerateRecipeForUser API call failure");
-            }
-        });
+        }
     }
 
     public void GetUserRecipePreferences(int userId, Activity activity) {
@@ -118,7 +132,7 @@ public class RecipeRandomizerHelper {
                 bundle.putParcelableArrayList("UserRecipePreferences", userRecipePreferencesResponse.RecipePreferences);
 
                 //ToDo: Cache these
-                Call getConfiguredRecipePreferencesCall = recipeRandomizerApi.getRecipePreferences();
+                Call getConfiguredRecipePreferencesCall = recipeRandomizerApi.getRecipePreferences("en-GB");
                 try {
                     Response getConfiguredRecipePreferencesResponse = getConfiguredRecipePreferencesCall.execute();
 
@@ -176,14 +190,14 @@ public class RecipeRandomizerHelper {
         }
     }
 
-    public ArrayList<RecipePreferenceDto> GetConfiguredRecipePreferences() {
+    public ArrayList<RecipePreferenceDto> GetConfiguredRecipePreferences(String cultureCode) {
         //ToDo: Not advisable => make async instead
         StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
         StrictMode.setThreadPolicy(policy);
 
         ArrayList<RecipePreferenceDto> result = new ArrayList<>();
 
-        Call call = recipeRandomizerApi.getRecipePreferences();
+        Call call = recipeRandomizerApi.getRecipePreferences(cultureCode);
 
         try {
             Response response = call.execute();
@@ -236,4 +250,15 @@ public class RecipeRandomizerHelper {
         String responseJson = mapper.writeValueAsString(responseObject);
         return mapper.readValue(responseJson, RecipePreferencesResponse.class);
     }
+    private ProblemDetailsResponse getProblemDetailsResponseFromJson(Object responseObject) throws JsonProcessingException {
+        ObjectMapper mapper = new ObjectMapper();
+        String responseJson = mapper.writeValueAsString(responseObject);
+        return mapper.readValue(responseJson, ProblemDetailsResponse.class);
+    }
+
+
+    /*private ProblemDetailsResponse getProblemDetailsResponseFromJson(String json) throws JsonProcessingException {
+        ObjectMapper mapper = new ObjectMapper();
+        return mapper.readValue(json, ProblemDetailsResponse.class);
+    }*/
 }

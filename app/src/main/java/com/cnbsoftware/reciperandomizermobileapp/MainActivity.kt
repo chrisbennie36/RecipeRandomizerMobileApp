@@ -26,7 +26,7 @@ class MainActivity : AppCompatActivity() {
             val btnRegisterUser = findViewById(R.id.btnRegisterUser) as Button
             val btnLogin = findViewById(R.id.btnMainActivityLogin) as Button
             val btnChangePreferences = findViewById(R.id.btnChangePreferences) as Button
-            val recipeRandomizerHelper = RecipeRandomizerHelper(null, null)
+            val recipeRandomizerHelper = RecipeRandomizerHelper(this, null)
             val registerUserActivity = Intent(this, RegisterUserActivity::class.java)
             val setPreferencesActivity = Intent(this, SetPreferencesActivity::class.java)
             val loginActivity = Intent(this, UserLoginActivity::class.java)

@@ -19,6 +19,6 @@ public interface RecipeRandomizerApi {
     Call<RecipePreferencesResponse> getUserRecipePreferences(@Path("userId") int userId);
     @GET("/api/Recipe/{userId}")
     Call<RecipeResponse> generateRecipeForUser(@Path("userId") int userId);
-    @GET("/api/RecipePreferences")
-    Call<RecipePreferencesResponse> getRecipePreferences();
+    @GET("/api/RecipePreferences/{cultureCode}")
+    Call<RecipePreferencesResponse> getRecipePreferences(@Path("cultureCode") String cultureCode);
 }

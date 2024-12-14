@@ -5,8 +5,6 @@ import android.os.Parcelable;
 
 import androidx.annotation.NonNull;
 
-import com.cnbsoftware.reciperandomizermobileapp.enums.FoodCategoryType;
-import com.cnbsoftware.reciperandomizermobileapp.models.ConfiguredRecipePreferencesModel;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 

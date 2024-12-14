@@ -1,25 +1,19 @@
 package com.cnbsoftware.reciperandomizermobileapp.helpers;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.StrictMode;
 import android.util.Log;
 
-import com.cnbsoftware.reciperandomizermobileapp.RegisterUserActivity;
 import com.cnbsoftware.reciperandomizermobileapp.apis.UserServiceApi;
 import com.cnbsoftware.reciperandomizermobileapp.apis.responses.UserResponse;
 import com.cnbsoftware.reciperandomizermobileapp.dtos.RecipePreferenceDto;
 import com.cnbsoftware.reciperandomizermobileapp.dtos.UserDto;
-import com.cnbsoftware.reciperandomizermobileapp.models.ConfiguredRecipePreferencesModel;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.io.IOException;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
-import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
@@ -44,7 +38,7 @@ public class UserServiceHelper {
         this.context = context;
         this.setPreferencesIntent = setPreferencesIntent;
         this.mainActivityIntent = mainActivityIntent;
-        this.recipeRandomizerHelper = new RecipeRandomizerHelper();
+        this.recipeRandomizerHelper = new RecipeRandomizerHelper(context);
 
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl(new URL("http://localhost:5175/"))
@@ -180,7 +174,7 @@ public class UserServiceHelper {
                         setPreferencesBundle.putInt("UserId", userResponse.Id);
                         setPreferencesBundle.putBoolean("ShowDietryRequirements", true);
 
-                        ArrayList<RecipePreferenceDto> configuredRecipePreferences = recipeRandomizerHelper.GetConfiguredRecipePreferences();
+                        ArrayList<RecipePreferenceDto> configuredRecipePreferences = recipeRandomizerHelper.GetConfiguredRecipePreferences("en-GB");
                         setPreferencesBundle.putParcelableArrayList("ConfiguredRecipePreferences", configuredRecipePreferences);
                         
                         setPreferencesIntent.putExtras(setPreferencesBundle);
