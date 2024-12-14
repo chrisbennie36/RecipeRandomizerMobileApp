@@ -83,7 +83,7 @@ public class RecipeRandomizerHelper {
             intent.putExtras(bundle);
             context.startActivity(intent);
         } else {
-            RecipeResponse recipeResponse = null;
+            RecipeResponse recipeResponse;
             try {
                 recipeResponse = getRecipeResponseFromJson(response.body());
             } catch (JsonProcessingException e) {
@@ -94,12 +94,6 @@ public class RecipeRandomizerHelper {
                 Intent intent = new Intent(Intent.ACTION_VIEW);
                 intent.setData(Uri.parse(recipeResponse.RecipeUrl));
                 activity.startActivity(intent);
-            } else {
-                Intent intent = new Intent(context, CustomErrorPageActivity.class);
-                Bundle bundle = new Bundle();
-                bundle.putString("ProblemDetails", recipeResponse.ErrorTraceId);
-                intent.putExtras(bundle);
-                context.startActivity(intent);
             }
         }
     }
