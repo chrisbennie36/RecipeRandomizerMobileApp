@@ -97,6 +97,7 @@ public class UserServiceHelper {
                             Bundle bundle = new Bundle();
                             bundle.putBoolean("UserLoggedIn", true);
                             bundle.putInt("UserId", userId);
+                            bundle.putString("UserLanguage", userDto.SelectedLanguage);
                             mainActivityIntent.putExtras(bundle);
                             mainActivityIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                             context.startActivity(mainActivityIntent);
@@ -174,7 +175,7 @@ public class UserServiceHelper {
                         setPreferencesBundle.putInt("UserId", userResponse.Id);
                         setPreferencesBundle.putBoolean("ShowDietryRequirements", true);
 
-                        ArrayList<RecipePreferenceDto> configuredRecipePreferences = recipeRandomizerHelper.GetConfiguredRecipePreferences("en-GB");
+                        ArrayList<RecipePreferenceDto> configuredRecipePreferences = recipeRandomizerHelper.GetConfiguredRecipePreferences(userDto.SelectedLanguage);
                         setPreferencesBundle.putParcelableArrayList("ConfiguredRecipePreferences", configuredRecipePreferences);
                         
                         setPreferencesIntent.putExtras(setPreferencesBundle);

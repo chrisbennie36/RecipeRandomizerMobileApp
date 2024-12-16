@@ -25,6 +25,7 @@ import java.net.MalformedURLException;
 public class RegisterUserActivity extends AppCompatActivity {
 
     private UserServiceHelper userServiceHelper;
+    private String userLanguage;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,10 +48,16 @@ public class RegisterUserActivity extends AppCompatActivity {
                 Log.e("RegisterUserActivity", "Malformed Recipe Randomizer API URL");
             }
 
+            Bundle bundle = getIntent().getExtras();
+
+            if(bundle != null && bundle.containsKey("UserLanguage")) {
+                userLanguage = bundle.getString("UserLanguage");
+            }
+
             btnRegisterUser.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    UserDto userDto = new UserDto(inputUsername.getText().toString(), inputPassword.getText().toString());
+                    UserDto userDto = new UserDto(inputUsername.getText().toString(), inputPassword.getText().toString(), userLanguage);
                     try {
                         userServiceHelper.saveUser(userDto);
                     } catch (IOException e) {

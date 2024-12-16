@@ -6,11 +6,16 @@
     android:id="@+id/customErrorPageView">
 
     <TextView
-        android:id="@+id/tvErrorTraceId"
+        android:id="@+id/tvUserErrorNotification"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         tools:layout_editor_absoluteX="1dp"
         tools:layout_editor_absoluteY="1dp" />
+    <TextView
+        android:id="@+id/tvErrorTraceId"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textIsSelectable="true"/>
 
     <Button
         android:id="@+id/btnOk"

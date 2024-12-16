@@ -41,7 +41,7 @@ public class RecipeRandomizerHelper {
     public RecipeRandomizerHelper(Context context) throws MalformedURLException {
         this.context = context;
         Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl(new URL("http://192.168.178.220:5179"))
+                .baseUrl(new URL("http://localhost:5179"))
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();
 
@@ -52,7 +52,7 @@ public class RecipeRandomizerHelper {
         this.mainActivityIntent = mainActivityIntent;
 
         Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl(new URL("http://192.168.178.220:5179"))
+                .baseUrl(new URL("http://localhost:5179"))
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();
 
@@ -191,7 +191,7 @@ public class RecipeRandomizerHelper {
 
         ArrayList<RecipePreferenceDto> result = new ArrayList<>();
 
-        Call call = recipeRandomizerApi.getRecipePreferences(cultureCode);
+        Call call = recipeRandomizerApi.getRecipePreferences(cultureCode != null ? cultureCode : "en-GB");
 
         try {
             Response response = call.execute();

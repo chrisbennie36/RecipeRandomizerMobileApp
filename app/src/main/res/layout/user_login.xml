@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/userLoginView"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
@@ -13,6 +12,7 @@
             android:id="@+id/inputLoginUsername"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_below="@+id/btnSelectLanguage"
             android:hint="Username" />
 
         <com.google.android.material.textfield.TextInputLayout
@@ -23,6 +23,7 @@
                 android:id="@+id/inputLoginPassword"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_above="@+id/inputLoginUsername"
                 android:hint="Password" />
 
             <Button
@@ -30,6 +31,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
+                android:layout_above="@+id/inputLoginPassword"
                 android:text="Log In" />
 
             <Button
@@ -37,7 +39,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
+                android:layout_above="@+id/btnLogin"
                 android:text="New User" />
         </com.google.android.material.textfield.TextInputLayout>
     </com.google.android.material.textfield.TextInputLayout>
-</LinearLayout>
+</RelativeLayout>

@@ -37,6 +37,10 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Log In"
+        app:layout_constraintBottom_toTopOf="@+id/btnRegisterUser"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
         tools:layout_editor_absoluteX="158dp"
         tools:layout_editor_absoluteY="209dp" />
 
@@ -47,7 +51,18 @@
         android:text="Change Preferences"
         android:visibility="invisible"
         tools:layout_editor_absoluteX="116dp"
-        tools:layout_editor_absoluteY="403dp"
+        tools:layout_editor_absoluteY="100dp"
+        app:layout_constraintBottom_toTopOf="@+id/btn_inspire_me"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <Button
+        android:id="@+id/btnSelectLanguage"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Change Language (EN)"
+        android:visibility="visible"
         app:layout_constraintBottom_toTopOf="@+id/btn_inspire_me"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"

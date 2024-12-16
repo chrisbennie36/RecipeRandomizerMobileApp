@@ -25,12 +25,14 @@ class CustomErrorPageActivity : AppCompatActivity() {
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
             val btnOk = findViewById(R.id.btnOk) as Button
             val tvTraceId = findViewById(R.id.tvErrorTraceId) as TextView
+            val tvUserErrorNotification = findViewById(R.id.tvUserErrorNotification) as TextView
             val mainActivity = Intent(this, MainActivity::class.java)
             val bundle = getIntent().extras
 
             if(bundle != null) {
                 problemDetails = bundle.getString("ProblemDetails")
-                tvTraceId.setText(String.format("An error has occurred, search for this Trace ID in Cloudwatch for more info: %s", getTraceId(problemDetails)))
+                tvUserErrorNotification.setText(String.format("An error has occurred, search for the below Trace ID in Cloudwatch for more info"));
+                tvTraceId.setText(getTraceId(problemDetails));
             }
 
             btnOk.setOnClickListener {
@@ -47,6 +49,7 @@ class CustomErrorPageActivity : AppCompatActivity() {
             return ""
         } else if(problemDetails.contains("traceId")) {
             val traceId = problemDetails.substringAfter("traceId")
+            //Problem details returns a trace ID with some extra formatting, so get rid of this
             return traceId.trim(':').trim('}').trim('"').trim(':').removePrefix("\"00-").removeSuffix("-00")
         } else {
             return problemDetails;

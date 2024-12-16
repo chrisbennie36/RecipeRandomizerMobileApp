@@ -15,6 +15,7 @@ import com.cnbsoftware.reciperandomizermobileapp.helpers.RecipeRandomizerHelper
 
 class MainActivity : AppCompatActivity() {
     private var userLoggedIn: Boolean = false
+    private var userLanguage: String = "en-GB"
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -24,16 +25,20 @@ class MainActivity : AppCompatActivity() {
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
             val btnInspireMe = findViewById(R.id.btn_inspire_me) as Button
             val btnRegisterUser = findViewById(R.id.btnRegisterUser) as Button
+            val btnSelectLanguage = findViewById(R.id.btnSelectLanguage) as Button
             val btnLogin = findViewById(R.id.btnMainActivityLogin) as Button
             val btnChangePreferences = findViewById(R.id.btnChangePreferences) as Button
             val recipeRandomizerHelper = RecipeRandomizerHelper(this, null)
             val registerUserActivity = Intent(this, RegisterUserActivity::class.java)
-            val setPreferencesActivity = Intent(this, SetPreferencesActivity::class.java)
             val loginActivity = Intent(this, UserLoginActivity::class.java)
             val bundle = getIntent().extras
 
             if(bundle != null) {
                 userLoggedIn = bundle.getBoolean("UserLoggedIn")
+                if(bundle.getString("UserLanguage") != null) {
+                    userLanguage = bundle.getString("UserLanguage").toString()
+                    btnSelectLanguage.text = String.format("Change Language (%s)", userLanguage.uppercase())
+                }
 
                 if(userLoggedIn) {
                     btnLogin.text = "Log Out"
@@ -41,6 +46,11 @@ class MainActivity : AppCompatActivity() {
                     btnInspireMe.visibility = VISIBLE
                     btnChangePreferences.visibility = VISIBLE
                 }
+            }
+
+            btnSelectLanguage.setOnClickListener {
+                val languagePickerIntent = Intent(this, LanguagePickerActivity::class.java)
+                startActivity(languagePickerIntent)
             }
 
             btnRegisterUser.setOnClickListener {
