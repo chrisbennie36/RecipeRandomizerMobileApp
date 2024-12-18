@@ -1,6 +1,5 @@
 package com.cnbsoftware.reciperandomizermobileapp
 
-import android.content.Intent
 import android.os.Bundle
 import android.widget.Button
 import androidx.activity.enableEdgeToEdge
@@ -9,6 +8,7 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import com.cnbsoftware.reciperandomizermobileapp.dtos.UserDto
 import com.cnbsoftware.reciperandomizermobileapp.helpers.UserServiceHelper
+import com.cnbsoftware.reciperandomizermobileapp.managers.ActivityManager
 import com.google.android.material.textfield.TextInputEditText
 
 class UserLoginActivity : AppCompatActivity() {
@@ -22,22 +22,18 @@ class UserLoginActivity : AppCompatActivity() {
             val btnRegisterUser = findViewById(R.id.btnLoginRegisterUser) as Button
             val usernameInput = findViewById(R.id.inputLoginUsername) as TextInputEditText
             val passwordInput = findViewById(R.id.inputLoginPassword) as TextInputEditText
+            val activityManager = ActivityManager(this)
 
-            val mainActivityIntent = Intent(this, MainActivity::class.java)
-            val registerUserIntent = Intent(this, RegisterUserActivity::class.java)
-            val setPreferencesIntent = Intent(this, SetPreferencesActivity::class.java)
-
-            val userServiceHelper = UserServiceHelper(this.applicationContext, setPreferencesIntent, mainActivityIntent)
+            val userServiceHelper = UserServiceHelper(activityManager)
 
             var selectedLanguage = "en-GB"
             val bundle = getIntent().extras
             if(bundle != null && bundle.containsKey("UserLanguage")) {
                 selectedLanguage = bundle.getString("UserLanguage").toString()
-                registerUserIntent.putExtras(bundle)
             }
 
             btnRegisterUser.setOnClickListener {
-                startActivity(registerUserIntent)
+                activityManager.OpenActivity(RegisterUserActivity::class.java, bundle)
             }
 
             btnUserLogin.setOnClickListener {

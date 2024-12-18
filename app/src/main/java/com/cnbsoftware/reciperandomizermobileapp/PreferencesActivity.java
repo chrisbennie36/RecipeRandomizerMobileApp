@@ -19,6 +19,7 @@ import com.cnbsoftware.reciperandomizermobileapp.dtos.UserRecipePreferencesDto;
 import com.cnbsoftware.reciperandomizermobileapp.enums.FoodCategoryType;
 import com.cnbsoftware.reciperandomizermobileapp.enums.RecipePreferenceType;
 import com.cnbsoftware.reciperandomizermobileapp.helpers.RecipeRandomizerHelper;
+import com.cnbsoftware.reciperandomizermobileapp.managers.ActivityManager;
 import com.cnbsoftware.reciperandomizermobileapp.managers.PreferencesActivityManager;
 import com.cnbsoftware.reciperandomizermobileapp.managers.PreferencesManager;
 import com.cnbsoftware.reciperandomizermobileapp.models.UserDietryRequirementsModel;
@@ -37,6 +38,7 @@ public abstract class PreferencesActivity extends AppCompatActivity {
     private int userId;
     private boolean isFinalActivity;
     private PreferencesManager preferencesManager;
+    private ActivityManager activityManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,6 +46,7 @@ public abstract class PreferencesActivity extends AppCompatActivity {
         EdgeToEdge.enable(this);
         setContentView(R.layout.set_preferences);
         Bundle bundle = getIntent().getExtras();
+        activityManager = new ActivityManager(this);
 
         if(bundle != null) {
             showDietryRequirements = bundle.getBoolean("ShowDietryRequirements");
@@ -61,7 +64,7 @@ public abstract class PreferencesActivity extends AppCompatActivity {
         SetGui(configuredRecipePreferences);
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.setPreferencesView), (v, insets) -> {
             Button btnSavePreferences = (Button)findViewById(R.id.btnSavePreferences);
-            preferencesActivityManager = new PreferencesActivityManager(DetermineNextFoodCategory(), this.getApplicationContext());
+            preferencesActivityManager = new PreferencesActivityManager(DetermineNextFoodCategory(), this);
             btnSavePreferences.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
@@ -215,7 +218,7 @@ public abstract class PreferencesActivity extends AppCompatActivity {
         if(isFinalActivity) {
             try {
                 dto.UserId = bundle.getInt("UserId") != 0 ? bundle.getInt("UserId") : userRecipePreferencesDto.UserId;
-                RecipeRandomizerHelper recipeRandomizerHelper = new RecipeRandomizerHelper(this.getApplicationContext(), new Intent(this.getApplicationContext(), MainActivity.class));
+                RecipeRandomizerHelper recipeRandomizerHelper = new RecipeRandomizerHelper(activityManager);
                 recipeRandomizerHelper.SaveRecipePreferences(dto);
             } catch (MalformedURLException e) {
                 Log.e("PreferencesActivity", "Malformed URL when creating the Recipe Randomizer");

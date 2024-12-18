@@ -1,6 +1,6 @@
 package com.cnbsoftware.reciperandomizermobileapp.managers;
 
-import android.content.Context;
+import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -13,13 +13,13 @@ import com.cnbsoftware.reciperandomizermobileapp.models.UserDietryRequirementsMo
 
 public class PreferencesActivityManager {
     private FoodCategoryType nextFoodCategory;
-    private Context currentActivityContext;
+    private ActivityManager activityManager;
     private static UserDietryRequirementsModel userDietryRequirements;
 
     // Meat => Seafood => Vegetarian if no requirements
-    public PreferencesActivityManager(FoodCategoryType nextFoodCategory, Context currentActivityContext) {
+    public PreferencesActivityManager(FoodCategoryType nextFoodCategory, Activity currentActivity) {
         this.nextFoodCategory = nextFoodCategory;
-        this.currentActivityContext = currentActivityContext;
+        this.activityManager = new ActivityManager(currentActivity);
     }
 
     public void SetUserDietryRequirements(UserDietryRequirementsModel userDietryRequirements) {
@@ -41,46 +41,33 @@ public class PreferencesActivityManager {
     }
 
     private void StartNextActivityBasedOnDietryRequirements(Bundle bundle) {
-        Intent nextPreferencesIntent;
+        //Intent nextPreferencesIntent;
         if(userDietryRequirements.Pescatarian) {
-            nextPreferencesIntent = new Intent(currentActivityContext, SetSeafoodPreferencesActivity.class);
+            activityManager.OpenActivity(SetSeafoodPreferencesActivity.class, bundle);
         }
         else if(userDietryRequirements.Vegetarian) {
-            nextPreferencesIntent = new Intent(currentActivityContext, SetVegetarianPreferencesActivity.class);
+            activityManager.OpenActivity(SetVegetarianPreferencesActivity.class, bundle);
         }
         else {
             Log.e("PreferencesActivityManager", "Could not start activity for an unmapped dietry requirement");
-            return;
         }
-
-        nextPreferencesIntent.putExtras(bundle);
-        nextPreferencesIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        currentActivityContext.startActivity(nextPreferencesIntent);
     }
 
     private void StartNextPreferencesActivityBasedOnFoodCategory(Bundle bundle) {
         Intent nextPreferencesIntent = null;
         switch(nextFoodCategory) {
             case Seafood:
-                nextPreferencesIntent = new Intent(currentActivityContext, SetSeafoodPreferencesActivity.class);
+                activityManager.OpenActivity(SetSeafoodPreferencesActivity.class, bundle);
                 break;
             case Vegetarian:
-                nextPreferencesIntent = new Intent(currentActivityContext, SetVegetarianPreferencesActivity.class);
+                activityManager.OpenActivity(SetVegetarianPreferencesActivity.class, bundle);
                 break;
             case Meat:
-                nextPreferencesIntent = new Intent(currentActivityContext, SetMeatPreferencesActivity.class);
+                activityManager.OpenActivity(SetMeatPreferencesActivity.class, bundle);
                 break;
             default:
+                Log.e("PreferencesActivityManager", String.format("Could not open Preferences Activity for FoodCategoryType %s", nextFoodCategory));
                 break;
         }
-
-        if (nextPreferencesIntent == null) {
-            Log.e("PreferencesActivityManager", String.format("Could not construct next intent for FoodCategoryType %s", nextFoodCategory));
-            return;
-        }
-
-        nextPreferencesIntent.putExtras(bundle);
-        nextPreferencesIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        currentActivityContext.startActivity(nextPreferencesIntent);
     }
 }

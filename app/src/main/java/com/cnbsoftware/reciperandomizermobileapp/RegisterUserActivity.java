@@ -1,13 +1,10 @@
 package com.cnbsoftware.reciperandomizermobileapp;
 
-import static android.content.Intent.FLAG_ACTIVITY_NEW_TASK;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
-import android.widget.EditText;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
@@ -17,6 +14,7 @@ import androidx.core.view.WindowInsetsCompat;
 
 import com.cnbsoftware.reciperandomizermobileapp.dtos.UserDto;
 import com.cnbsoftware.reciperandomizermobileapp.helpers.UserServiceHelper;
+import com.cnbsoftware.reciperandomizermobileapp.managers.ActivityManager;
 import com.google.android.material.textfield.TextInputEditText;
 
 import java.io.IOException;
@@ -25,6 +23,7 @@ import java.net.MalformedURLException;
 public class RegisterUserActivity extends AppCompatActivity {
 
     private UserServiceHelper userServiceHelper;
+    private ActivityManager activityManager;
     private String userLanguage;
 
     @Override
@@ -32,6 +31,7 @@ public class RegisterUserActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
         setContentView(R.layout.register_user);
+        activityManager = new ActivityManager(this);
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.registerUserView), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
@@ -39,11 +39,9 @@ public class RegisterUserActivity extends AppCompatActivity {
             TextInputEditText inputUsername = (TextInputEditText) findViewById(R.id.iputUsernameEditText);
             TextInputEditText inputEmail = (TextInputEditText) findViewById(R.id.inputEmailEditText);
             TextInputEditText inputPassword = (TextInputEditText) findViewById(R.id.inputPasswordEditText);
-            Intent setPreferencesActivityIntent = new Intent(this.getApplicationContext(), SetPreferencesActivity.class);
-            setPreferencesActivityIntent.addFlags(FLAG_ACTIVITY_NEW_TASK);
 
             try {
-                userServiceHelper = new UserServiceHelper(this.getApplicationContext(), setPreferencesActivityIntent, null);
+                userServiceHelper = new UserServiceHelper(activityManager);
             } catch (MalformedURLException e) {
                 Log.e("RegisterUserActivity", "Malformed Recipe Randomizer API URL");
             }

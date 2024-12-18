@@ -12,10 +12,11 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import com.cnbsoftware.reciperandomizermobileapp.helpers.RecipeRandomizerHelper
+import com.cnbsoftware.reciperandomizermobileapp.managers.ActivityManager
 
 class MainActivity : AppCompatActivity() {
     private var userLoggedIn: Boolean = false
-    private var userLanguage: String = "en-GB"
+    private var userLanguage: String = "en"
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -28,9 +29,8 @@ class MainActivity : AppCompatActivity() {
             val btnSelectLanguage = findViewById(R.id.btnSelectLanguage) as Button
             val btnLogin = findViewById(R.id.btnMainActivityLogin) as Button
             val btnChangePreferences = findViewById(R.id.btnChangePreferences) as Button
-            val recipeRandomizerHelper = RecipeRandomizerHelper(this, null)
-            val registerUserActivity = Intent(this, RegisterUserActivity::class.java)
-            val loginActivity = Intent(this, UserLoginActivity::class.java)
+            val activityManager = ActivityManager(this)
+            val recipeRandomizerHelper = RecipeRandomizerHelper(activityManager)
             val bundle = getIntent().extras
 
             if(bundle != null) {
@@ -49,12 +49,11 @@ class MainActivity : AppCompatActivity() {
             }
 
             btnSelectLanguage.setOnClickListener {
-                val languagePickerIntent = Intent(this, LanguagePickerActivity::class.java)
-                startActivity(languagePickerIntent)
+                activityManager.OpenActivity(LanguagePickerActivity::class.java)
             }
 
             btnRegisterUser.setOnClickListener {
-                startActivity(registerUserActivity)
+                activityManager.OpenActivity(RegisterUserActivity::class.java, bundle)
             }
 
             btnChangePreferences.setOnClickListener {
@@ -69,7 +68,7 @@ class MainActivity : AppCompatActivity() {
 
             btnLogin.setOnClickListener {
                 if(!userLoggedIn) {
-                    startActivity(loginActivity)
+                    activityManager.OpenActivity(UserLoginActivity::class.java, bundle)
                 } else {
                     btnLogin.text = "Log In"
                     btnRegisterUser.visibility = VISIBLE
@@ -81,7 +80,7 @@ class MainActivity : AppCompatActivity() {
             btnInspireMe.setOnClickListener {
                 if(bundle != null) {
                     val userId = bundle.getInt("UserId")
-                    recipeRandomizerHelper.InspireUser(userId, this)
+                    recipeRandomizerHelper.InspireUser(userId)
                 }
             }
 

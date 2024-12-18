@@ -6,10 +6,13 @@ import android.os.Bundle;
 import android.os.StrictMode;
 import android.util.Log;
 
+import com.cnbsoftware.reciperandomizermobileapp.MainActivity;
+import com.cnbsoftware.reciperandomizermobileapp.SetPreferencesActivity;
 import com.cnbsoftware.reciperandomizermobileapp.apis.UserServiceApi;
 import com.cnbsoftware.reciperandomizermobileapp.apis.responses.UserResponse;
 import com.cnbsoftware.reciperandomizermobileapp.dtos.RecipePreferenceDto;
 import com.cnbsoftware.reciperandomizermobileapp.dtos.UserDto;
+import com.cnbsoftware.reciperandomizermobileapp.managers.ActivityManager;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -28,17 +31,13 @@ public class UserServiceHelper {
 
     UserServiceApi apiService;
     RecipeRandomizerHelper recipeRandomizerHelper;
-    Context context;
-    Intent setPreferencesIntent;
-    Intent mainActivityIntent;
+    ActivityManager activityManager;
 
     boolean loginSuccessful = true;
 
-    public UserServiceHelper(Context context, Intent setPreferencesIntent, Intent mainActivityIntent) throws MalformedURLException {
-        this.context = context;
-        this.setPreferencesIntent = setPreferencesIntent;
-        this.mainActivityIntent = mainActivityIntent;
-        this.recipeRandomizerHelper = new RecipeRandomizerHelper(context);
+    public UserServiceHelper(ActivityManager activityManager) throws MalformedURLException {
+        this.activityManager = activityManager;
+        this.recipeRandomizerHelper = new RecipeRandomizerHelper(activityManager);
 
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl(new URL("http://localhost:5175/"))
@@ -98,9 +97,7 @@ public class UserServiceHelper {
                             bundle.putBoolean("UserLoggedIn", true);
                             bundle.putInt("UserId", userId);
                             bundle.putString("UserLanguage", userDto.SelectedLanguage);
-                            mainActivityIntent.putExtras(bundle);
-                            mainActivityIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                            context.startActivity(mainActivityIntent);
+                            activityManager.OpenActivity(MainActivity.class, bundle);
                         }
                     }
 
@@ -177,9 +174,8 @@ public class UserServiceHelper {
 
                         ArrayList<RecipePreferenceDto> configuredRecipePreferences = recipeRandomizerHelper.GetConfiguredRecipePreferences(userDto.SelectedLanguage);
                         setPreferencesBundle.putParcelableArrayList("ConfiguredRecipePreferences", configuredRecipePreferences);
-                        
-                        setPreferencesIntent.putExtras(setPreferencesBundle);
-                        context.startActivity(setPreferencesIntent);
+
+                        activityManager.OpenActivity(SetPreferencesActivity.class, setPreferencesBundle);
                     } catch (JsonProcessingException e) {
                         throw new RuntimeException(e);
                     }

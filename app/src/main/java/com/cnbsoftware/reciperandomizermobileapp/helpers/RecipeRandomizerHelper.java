@@ -1,7 +1,6 @@
 package com.cnbsoftware.reciperandomizermobileapp.helpers;
 
 import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -9,6 +8,7 @@ import android.os.StrictMode;
 import android.util.Log;
 
 import com.cnbsoftware.reciperandomizermobileapp.CustomErrorPageActivity;
+import com.cnbsoftware.reciperandomizermobileapp.MainActivity;
 import com.cnbsoftware.reciperandomizermobileapp.SetPreferencesActivity;
 import com.cnbsoftware.reciperandomizermobileapp.apis.RecipeRandomizerApi;
 import com.cnbsoftware.reciperandomizermobileapp.apis.responses.ProblemDetailsResponse;
@@ -16,9 +16,9 @@ import com.cnbsoftware.reciperandomizermobileapp.apis.responses.RecipePreference
 import com.cnbsoftware.reciperandomizermobileapp.apis.responses.RecipeResponse;
 import com.cnbsoftware.reciperandomizermobileapp.dtos.RecipePreferenceDto;
 import com.cnbsoftware.reciperandomizermobileapp.dtos.UserRecipePreferencesDto;
+import com.cnbsoftware.reciperandomizermobileapp.managers.ActivityManager;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
@@ -33,24 +33,12 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 public class RecipeRandomizerHelper {
 
-    Context context;
-    Intent mainActivityIntent;
+    ActivityManager activityManager;
     RecipeRandomizerApi recipeRandomizerApi;
     ArrayList<RecipePreferenceDto> configuredRecipePreferences = new ArrayList<>();
 
-    public RecipeRandomizerHelper(Context context) throws MalformedURLException {
-        this.context = context;
-        Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl(new URL("http://localhost:5179"))
-                .addConverterFactory(GsonConverterFactory.create())
-                .build();
-
-        recipeRandomizerApi = retrofit.create(RecipeRandomizerApi.class);
-    }
-    public RecipeRandomizerHelper(Context context, Intent mainActivityIntent) throws MalformedURLException {
-        this.context = context;
-        this.mainActivityIntent = mainActivityIntent;
-
+    public RecipeRandomizerHelper(ActivityManager activityManager) throws MalformedURLException {
+        this.activityManager = activityManager;
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl(new URL("http://localhost:5179"))
                 .addConverterFactory(GsonConverterFactory.create())
@@ -59,7 +47,7 @@ public class RecipeRandomizerHelper {
         recipeRandomizerApi = retrofit.create(RecipeRandomizerApi.class);
     }
 
-    public void InspireUser(int userId, Activity activity) {
+    public void InspireUser(int userId) {
         //ToDo: Not advisable => make async instead
         StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
         StrictMode.setThreadPolicy(policy);
@@ -70,6 +58,7 @@ public class RecipeRandomizerHelper {
             response = call.execute();
         } catch (IOException e) {
             Log.e("RecipeRandomizerHelper", String.format("IOException when calling the GenerateRecipeForUser API method: %s", e.getMessage()));
+            return;
         }
 
         if (!response.isSuccessful()) {
@@ -79,9 +68,7 @@ public class RecipeRandomizerHelper {
             } catch (IOException e) {
                 Log.e("RecipeRandomizerHelper", String.format("IOException when calling the GenerateRecipeForUser API method: %s", e.getMessage()));
             }
-            Intent intent = new Intent(context, CustomErrorPageActivity.class);
-            intent.putExtras(bundle);
-            context.startActivity(intent);
+            activityManager.OpenActivity(CustomErrorPageActivity.class, bundle);
         } else {
             RecipeResponse recipeResponse;
             try {
@@ -90,10 +77,8 @@ public class RecipeRandomizerHelper {
                 throw new RuntimeException(e);
             }
 
-            if(recipeResponse.RecipeUrl != null) {
-                Intent intent = new Intent(Intent.ACTION_VIEW);
-                intent.setData(Uri.parse(recipeResponse.RecipeUrl));
-                activity.startActivity(intent);
+            if(recipeResponse.RecipeUrl != null) {;
+                activityManager.OpenUrl(recipeResponse.RecipeUrl);
             }
         }
     }
@@ -114,7 +99,7 @@ public class RecipeRandomizerHelper {
                     return;
                 }
 
-                RecipePreferencesResponse userRecipePreferencesResponse = null;
+                RecipePreferencesResponse userRecipePreferencesResponse;
                 try {
                     userRecipePreferencesResponse = getRecipePreferencesResponseFromJson(response.body());
                 } catch (JsonProcessingException e) {
@@ -172,8 +157,7 @@ public class RecipeRandomizerHelper {
                         return;
                     }
 
-                    mainActivityIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                    context.startActivity(mainActivityIntent);
+                    activityManager.OpenActivity(MainActivity.class);
                 }
 
                 @Override
@@ -222,8 +206,7 @@ public class RecipeRandomizerHelper {
                     return;
                 }
 
-                mainActivityIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                context.startActivity(mainActivityIntent);
+                activityManager.OpenActivity(MainActivity.class);
             }
 
             @Override
@@ -244,15 +227,4 @@ public class RecipeRandomizerHelper {
         String responseJson = mapper.writeValueAsString(responseObject);
         return mapper.readValue(responseJson, RecipePreferencesResponse.class);
     }
-    private ProblemDetailsResponse getProblemDetailsResponseFromJson(Object responseObject) throws JsonProcessingException {
-        ObjectMapper mapper = new ObjectMapper();
-        String responseJson = mapper.writeValueAsString(responseObject);
-        return mapper.readValue(responseJson, ProblemDetailsResponse.class);
-    }
-
-
-    /*private ProblemDetailsResponse getProblemDetailsResponseFromJson(String json) throws JsonProcessingException {
-        ObjectMapper mapper = new ObjectMapper();
-        return mapper.readValue(json, ProblemDetailsResponse.class);
-    }*/
 }
