@@ -6,7 +6,7 @@ import com.google.gson.annotations.SerializedName;
 
 import java.util.ArrayList;
 
-public class RecipePreferencesResponse {
+public class RecipePreferencesResponse extends ApiResponse{
     @SerializedName("recipePreferences")
     @Expose
     public ArrayList<RecipePreferenceDto> RecipePreferences;

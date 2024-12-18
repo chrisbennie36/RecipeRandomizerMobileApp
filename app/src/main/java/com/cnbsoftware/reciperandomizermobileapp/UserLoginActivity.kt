@@ -7,7 +7,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import com.cnbsoftware.reciperandomizermobileapp.dtos.UserDto
-import com.cnbsoftware.reciperandomizermobileapp.helpers.UserServiceHelper
+import com.cnbsoftware.reciperandomizermobileapp.helpers.UserServiceApiHelper
 import com.cnbsoftware.reciperandomizermobileapp.managers.ActivityManager
 import com.google.android.material.textfield.TextInputEditText
 
@@ -24,7 +24,10 @@ class UserLoginActivity : AppCompatActivity() {
             val passwordInput = findViewById(R.id.inputLoginPassword) as TextInputEditText
             val activityManager = ActivityManager(this)
 
-            val userServiceHelper = UserServiceHelper(activityManager)
+            val userServiceApiHelper =
+                UserServiceApiHelper(
+                    activityManager
+                )
 
             var selectedLanguage = "en-GB"
             val bundle = getIntent().extras
@@ -37,7 +40,7 @@ class UserLoginActivity : AppCompatActivity() {
             }
 
             btnUserLogin.setOnClickListener {
-                val loginSuccessful = userServiceHelper.Login(UserDto(usernameInput.text.toString(), passwordInput.text.toString(), selectedLanguage))
+                val loginSuccessful = userServiceApiHelper.Login(UserDto(usernameInput.text.toString(), passwordInput.text.toString(), selectedLanguage))
 
                 if (!loginSuccessful) {
                     usernameInput.hint = "Incorrect username or password"

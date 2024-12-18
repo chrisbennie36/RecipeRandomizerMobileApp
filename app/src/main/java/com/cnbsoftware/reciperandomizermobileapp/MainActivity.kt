@@ -1,17 +1,15 @@
 package com.cnbsoftware.reciperandomizermobileapp
 
-import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.View.INVISIBLE
-import android.view.View.OnFocusChangeListener
 import android.view.View.VISIBLE
 import android.widget.Button
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
-import com.cnbsoftware.reciperandomizermobileapp.helpers.RecipeRandomizerHelper
+import com.cnbsoftware.reciperandomizermobileapp.helpers.RecipeRandomizerApiHelper
 import com.cnbsoftware.reciperandomizermobileapp.managers.ActivityManager
 
 class MainActivity : AppCompatActivity() {
@@ -30,7 +28,10 @@ class MainActivity : AppCompatActivity() {
             val btnLogin = findViewById(R.id.btnMainActivityLogin) as Button
             val btnChangePreferences = findViewById(R.id.btnChangePreferences) as Button
             val activityManager = ActivityManager(this)
-            val recipeRandomizerHelper = RecipeRandomizerHelper(activityManager)
+            val recipeRandomizerHelper =
+                RecipeRandomizerApiHelper(
+                    activityManager
+                )
             val bundle = getIntent().extras
 
             if(bundle != null) {

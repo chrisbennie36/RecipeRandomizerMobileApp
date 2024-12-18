@@ -1,7 +1,5 @@
 package com.cnbsoftware.reciperandomizermobileapp.helpers;
 
-import android.content.Context;
-import android.content.Intent;
 import android.os.Bundle;
 import android.os.StrictMode;
 import android.util.Log;
@@ -27,17 +25,19 @@ import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
-public class UserServiceHelper {
+public class UserServiceApiHelper {
 
     UserServiceApi apiService;
-    RecipeRandomizerHelper recipeRandomizerHelper;
+    RecipeRandomizerApiHelper recipeRandomizerApiHelper;
     ActivityManager activityManager;
+    ApiResponseParser apiResponseParser;
 
     boolean loginSuccessful = true;
 
-    public UserServiceHelper(ActivityManager activityManager) throws MalformedURLException {
+    public UserServiceApiHelper(ActivityManager activityManager) throws MalformedURLException {
         this.activityManager = activityManager;
-        this.recipeRandomizerHelper = new RecipeRandomizerHelper(activityManager);
+        this.recipeRandomizerApiHelper = new RecipeRandomizerApiHelper(activityManager);
+        this.apiResponseParser = new ApiResponseParser(new ObjectMapper());
 
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl(new URL("http://localhost:5175/"))
@@ -85,9 +85,9 @@ public class UserServiceHelper {
                         }
 
                         if(response.body() != null) {
-                            UserResponse userResponse = null;
+                            UserResponse userResponse;
                             try {
-                                userResponse = getResponseFromJson(response.body());
+                                userResponse = apiResponseParser.parseApiResponse(response.body(), UserResponse.class);
                                 userId = userResponse.Id;
                             } catch (JsonProcessingException e) {
                                 throw new RuntimeException(e);
@@ -167,12 +167,12 @@ public class UserServiceHelper {
 
                 if(response.body() != null) {
                     try {
-                        UserResponse userResponse = getResponseFromJson(response.body());
+                        UserResponse userResponse = apiResponseParser.parseApiResponse(response.body(), UserResponse.class);
                         Bundle setPreferencesBundle = new Bundle();
                         setPreferencesBundle.putInt("UserId", userResponse.Id);
                         setPreferencesBundle.putBoolean("ShowDietryRequirements", true);
 
-                        ArrayList<RecipePreferenceDto> configuredRecipePreferences = recipeRandomizerHelper.GetConfiguredRecipePreferences(userDto.SelectedLanguage);
+                        ArrayList<RecipePreferenceDto> configuredRecipePreferences = recipeRandomizerApiHelper.GetConfiguredRecipePreferences(userDto.SelectedLanguage);
                         setPreferencesBundle.putParcelableArrayList("ConfiguredRecipePreferences", configuredRecipePreferences);
 
                         activityManager.OpenActivity(SetPreferencesActivity.class, setPreferencesBundle);
@@ -188,16 +188,4 @@ public class UserServiceHelper {
             }
         });
     }
-
-    String getRequestBodyJson(UserDto userDto) throws JsonProcessingException {
-        ObjectMapper mapper = new ObjectMapper();
-        return mapper.writeValueAsString(userDto);
-    }
-
-    UserResponse getResponseFromJson(Object responseObject) throws JsonProcessingException {
-        ObjectMapper mapper = new ObjectMapper();
-        String responseJson = mapper.writeValueAsString(responseObject);
-        return mapper.readValue(responseJson, UserResponse.class);
-    }
-
 }

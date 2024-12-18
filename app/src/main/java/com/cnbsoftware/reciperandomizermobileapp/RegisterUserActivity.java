@@ -13,7 +13,7 @@ import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
 import com.cnbsoftware.reciperandomizermobileapp.dtos.UserDto;
-import com.cnbsoftware.reciperandomizermobileapp.helpers.UserServiceHelper;
+import com.cnbsoftware.reciperandomizermobileapp.helpers.UserServiceApiHelper;
 import com.cnbsoftware.reciperandomizermobileapp.managers.ActivityManager;
 import com.google.android.material.textfield.TextInputEditText;
 
@@ -22,7 +22,7 @@ import java.net.MalformedURLException;
 
 public class RegisterUserActivity extends AppCompatActivity {
 
-    private UserServiceHelper userServiceHelper;
+    private UserServiceApiHelper userServiceApiHelper;
     private ActivityManager activityManager;
     private String userLanguage;
 
@@ -41,7 +41,7 @@ public class RegisterUserActivity extends AppCompatActivity {
             TextInputEditText inputPassword = (TextInputEditText) findViewById(R.id.inputPasswordEditText);
 
             try {
-                userServiceHelper = new UserServiceHelper(activityManager);
+                userServiceApiHelper = new UserServiceApiHelper(activityManager);
             } catch (MalformedURLException e) {
                 Log.e("RegisterUserActivity", "Malformed Recipe Randomizer API URL");
             }
@@ -57,7 +57,7 @@ public class RegisterUserActivity extends AppCompatActivity {
                 public void onClick(View view) {
                     UserDto userDto = new UserDto(inputUsername.getText().toString(), inputPassword.getText().toString(), userLanguage);
                     try {
-                        userServiceHelper.saveUser(userDto);
+                        userServiceApiHelper.saveUser(userDto);
                     } catch (IOException e) {
                         Log.e("RegisterUserActivity", "JSON error occurred when serializing the Create User Request Body");
                     }

@@ -2,17 +2,12 @@ package com.cnbsoftware.reciperandomizermobileapp
 
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
-import android.view.View.INVISIBLE
-import android.view.View.OnFocusChangeListener
-import android.view.View.VISIBLE
 import android.widget.Button
 import android.widget.TextView
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
-import com.cnbsoftware.reciperandomizermobileapp.helpers.RecipeRandomizerHelper
 
 class CustomErrorPageActivity : AppCompatActivity() {
     private var problemDetails: String? = ""

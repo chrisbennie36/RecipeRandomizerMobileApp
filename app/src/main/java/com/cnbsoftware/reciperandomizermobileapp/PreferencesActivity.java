@@ -1,6 +1,5 @@
 package com.cnbsoftware.reciperandomizermobileapp;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -18,7 +17,7 @@ import com.cnbsoftware.reciperandomizermobileapp.dtos.RecipePreferenceDto;
 import com.cnbsoftware.reciperandomizermobileapp.dtos.UserRecipePreferencesDto;
 import com.cnbsoftware.reciperandomizermobileapp.enums.FoodCategoryType;
 import com.cnbsoftware.reciperandomizermobileapp.enums.RecipePreferenceType;
-import com.cnbsoftware.reciperandomizermobileapp.helpers.RecipeRandomizerHelper;
+import com.cnbsoftware.reciperandomizermobileapp.helpers.RecipeRandomizerApiHelper;
 import com.cnbsoftware.reciperandomizermobileapp.managers.ActivityManager;
 import com.cnbsoftware.reciperandomizermobileapp.managers.PreferencesActivityManager;
 import com.cnbsoftware.reciperandomizermobileapp.managers.PreferencesManager;
@@ -218,7 +217,7 @@ public abstract class PreferencesActivity extends AppCompatActivity {
         if(isFinalActivity) {
             try {
                 dto.UserId = bundle.getInt("UserId") != 0 ? bundle.getInt("UserId") : userRecipePreferencesDto.UserId;
-                RecipeRandomizerHelper recipeRandomizerHelper = new RecipeRandomizerHelper(activityManager);
+                RecipeRandomizerApiHelper recipeRandomizerHelper = new RecipeRandomizerApiHelper(activityManager);
                 recipeRandomizerHelper.SaveRecipePreferences(dto);
             } catch (MalformedURLException e) {
                 Log.e("PreferencesActivity", "Malformed URL when creating the Recipe Randomizer");

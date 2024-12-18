@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
-public class ProblemDetailsResponse {
+public class ProblemDetailsResponse extends ApiResponse{
     @JsonIgnore
     @SerializedName("type")
     @Expose
